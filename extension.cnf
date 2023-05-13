@@ -1,0 +1,7 @@
+extension-name: In adiutorium
+short-description: functionality supporting workflows of the In adiutorium project
+version: 0.0.1
+api-version: 0.9.0
+maintainers: [
+  ]
+license: none
