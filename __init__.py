@@ -9,12 +9,17 @@ from .inadiutorium import score, contextmenu
 class Actions(extensions.actions.ExtensionActionCollection):
     def createActions(self, parent):
         self.copy_score_action = QAction(parent)
+        self.duplicate_score_action = QAction(parent)
 
     def translateUI(self):
         self.copy_score_action.setText(_('Copy score'))
+        self.duplicate_score_action.setText(_('Duplicate score'))
 
     def configure_menu_actions(self):
-        self.set_menu_action_list('editor', [self.copy_score_action])
+        self.set_menu_action_list('editor', [
+            self.copy_score_action,
+            self.duplicate_score_action,
+        ])
 
 class Extension(extensions.Extension):
     _action_collection_class = Actions
@@ -24,6 +29,7 @@ class Extension(extensions.Extension):
 
         ac = self.action_collection()
         ac.copy_score_action.triggered.connect(self.do_copy_score)
+        ac.duplicate_score_action.triggered.connect(self.do_duplicate_score)
 
         # TODO: enable/disable actions depending on availability
         # of a score under cursor
@@ -33,3 +39,6 @@ class Extension(extensions.Extension):
 
     def do_copy_score(self):
         contextmenu.copy_score(self.current_score(), self.current_document())
+
+    def do_duplicate_score(self):
+        contextmenu.duplicate_score(self.current_score(), self.current_document(), self.mainwindow())
