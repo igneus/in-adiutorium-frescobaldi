@@ -54,13 +54,9 @@ def duplicate_score(score, document, mainwindow):
     cursor.setPosition(score_beginning, QTextCursor.KeepAnchor)
     mainwindow.setTextCursor(cursor)
 
-# TODO: score must have fial
-def goto_source():
-    fial = self._current_score.fial()
-    open_fial(fial, self._path, self._mainwindow)
+def goto_source(score, path, mainwindow):
+    open_fial(score.fial(), path, mainwindow)
 
-
-# TODO: score must have ID
 def goto_variations():
     if is_variations_file(self._path):
         path_to_open = main_file(self._path)
