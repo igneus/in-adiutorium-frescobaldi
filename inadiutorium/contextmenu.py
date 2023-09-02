@@ -8,130 +8,66 @@ from . import is_in_adiutorium_file
 from .variations import is_variations_file, main_file, variations_file
 from . import score
 
-def actions(cursor, menu, mainwindow):
-    """
-    Return a list of In adiutorium-related actions (maybe empty)
-    for files at the cursor to open.
-    """
 
-    return ActionsFactory(cursor, menu, mainwindow).actions()
+def copy_score(score, document):
+    # copy score
+    copy_cursor = QTextCursor(document)
+    score_end = score.end()
+    # it isn't easily possible to get score start index
+    # from the DOM ...
+    start_token = '\\score'
+    score_start_cur = document.find(start_token, score_end, QTextDocument.FindBackward)
+    score_start = score_start_cur.position() - len(start_token)
+    copy_cursor.setPosition(score_start, QTextCursor.MoveAnchor)
+    copy_cursor.setPosition(score_end, QTextCursor.KeepAnchor)
 
-class ActionsFactory:
-    def __init__(self, cursor, menu, mainwindow):
-        self._cursor = cursor
-        self._menu = menu
-        self._mainwindow = mainwindow
+    # copy to clipboard
+    fragment = copy_cursor.selection()
+    QApplication.clipboard().setText(fragment.toPlainText())
 
-        self._document = mainwindow.currentDocument()
-        self._path = self._document and self._document.url().path()
-        self._current_score = score.score_under_cursor(self._cursor)
+def duplicate_score():
+    # add newline after the score
+    cursor = QTextCursor(self._document)
+    cursor.setPosition(self._current_score.end(), QTextCursor.MoveAnchor)
+    cursor.insertText('\n\n')
 
-    def actions(self):
-        if not self._document:
-            return []
+    # copy score
+    copy_cursor = QTextCursor(self._document)
+    score_end = self._current_score.end()
+    # it isn't easily possible to get score start index
+    # from the DOM ...
+    start_token = '\\score'
+    score_start_cur = self._document.find(start_token, score_end, QTextDocument.FindBackward)
+    score_start = score_start_cur.position() - len(start_token)
+    while self._document.characterAt(score_start - 1) == ' ':
+        score_start -= 1
+    copy_cursor.setPosition(score_start, QTextCursor.MoveAnchor)
+    copy_cursor.setPosition(score_end, QTextCursor.KeepAnchor)
 
-        if not is_in_adiutorium_file(self._path):
-            return []
+    # insert copy
+    fragment = copy_cursor.selection()
+    cursor.insertFragment(fragment)
 
-        if self._current_score is None:
-            return []
+    # make it selected
+    fragment_len = len(fragment.toPlainText())
+    score_beginning = cursor.position() - fragment_len
+    cursor.setPosition(score_beginning, QTextCursor.KeepAnchor)
+    self._mainwindow.setTextCursor(cursor)
 
-        actions = []
+# TODO: score must have fial
+def goto_source():
+    fial = self._current_score.fial()
+    open_fial(fial, self._path, self._mainwindow)
 
-        actions.append(self._copy())
-        actions.append(self._duplicate())
 
-        if self._current_score.has_fial():
-            actions.append(self._goto_source())
+# TODO: score must have ID
+def goto_variations():
+    if is_variations_file(self._path):
+        path_to_open = main_file(self._path)
+    else:
+        path_to_open = variations_file(self._path)
 
-        if self._current_score.has_id():
-            actions.append(self._goto_variations())
-
-        return actions
-
-    def _copy(self):
-        a = QAction(self._menu)
-        a.setText('Copy score')
-
-        @a.triggered.connect
-        def trigger():
-            # copy score
-            copy_cursor = QTextCursor(self._document)
-            score_end = self._current_score.end()
-            # it isn't easily possible to get score start index
-            # from the DOM ...
-            start_token = '\\score'
-            score_start_cur = self._document.find(start_token, score_end, QTextDocument.FindBackward)
-            score_start = score_start_cur.position() - len(start_token)
-            copy_cursor.setPosition(score_start, QTextCursor.MoveAnchor)
-            copy_cursor.setPosition(score_end, QTextCursor.KeepAnchor)
-
-            # copy to clipboard
-            fragment = copy_cursor.selection()
-            QApplication.clipboard().setText(fragment.toPlainText())
-
-        return a
-
-    def _duplicate(self):
-        a = QAction(self._menu)
-        a.setText('Duplicate score')
-
-        @a.triggered.connect
-        def trigger():
-            # add newline after the score
-            cursor = QTextCursor(self._document)
-            cursor.setPosition(self._current_score.end(), QTextCursor.MoveAnchor)
-            cursor.insertText('\n\n')
-
-            # copy score
-            copy_cursor = QTextCursor(self._document)
-            score_end = self._current_score.end()
-            # it isn't easily possible to get score start index
-            # from the DOM ...
-            start_token = '\\score'
-            score_start_cur = self._document.find(start_token, score_end, QTextDocument.FindBackward)
-            score_start = score_start_cur.position() - len(start_token)
-            while self._document.characterAt(score_start - 1) == ' ':
-                score_start -= 1
-            copy_cursor.setPosition(score_start, QTextCursor.MoveAnchor)
-            copy_cursor.setPosition(score_end, QTextCursor.KeepAnchor)
-
-            # insert copy
-            fragment = copy_cursor.selection()
-            cursor.insertFragment(fragment)
-
-            # make it selected
-            fragment_len = len(fragment.toPlainText())
-            score_beginning = cursor.position() - fragment_len
-            cursor.setPosition(score_beginning, QTextCursor.KeepAnchor)
-            self._mainwindow.setTextCursor(cursor)
-
-        return a
-
-    def _goto_source(self):
-        a = QAction(self._menu)
-        a.setText('Go to source')
-        @a.triggered.connect
-        def trigger():
-            fial = self._current_score.fial()
-            open_fial(fial, self._path, self._mainwindow)
-
-        return a
-
-    def _goto_variations(self):
-        a = QAction(self._menu)
-        file_type = ['variations', 'main'][is_variations_file(self._path)]
-        a.setText('Go to {0}'.format(file_type))
-        @a.triggered.connect
-        def trigger():
-            if is_variations_file(self._path):
-                path_to_open = main_file(self._path)
-            else:
-                path_to_open = variations_file(self._path)
-
-            open_score(path_to_open, self._current_score.headers['id'], self._mainwindow)
-
-        return a
+    open_score(path_to_open, self._current_score.headers['id'], self._mainwindow)
 
 """ Helper functions """
 
