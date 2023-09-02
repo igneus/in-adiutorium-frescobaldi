@@ -57,13 +57,13 @@ def duplicate_score(score, document, mainwindow):
 def goto_source(score, path, mainwindow):
     open_fial(score.fial(), path, mainwindow)
 
-def goto_variations():
-    if is_variations_file(self._path):
-        path_to_open = main_file(self._path)
+def goto_variations(score, path, mainwindow):
+    if is_variations_file(path):
+        path_to_open = main_file(path)
     else:
-        path_to_open = variations_file(self._path)
+        path_to_open = variations_file(path)
 
-    open_score(path_to_open, self._current_score.headers['id'], self._mainwindow)
+    open_score(path_to_open, score.headers['id'], mainwindow)
 
 """ Helper functions """
 
