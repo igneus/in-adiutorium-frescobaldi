@@ -4,4 +4,9 @@ version: 0.0.1
 api-version: 0.9.0
 maintainers: [
   ]
-license: none
+# There doesn't seem to be a specification of what kind of
+# license identification should be used, so let's
+# go by the https://spdx.org/licenses/ standard
+license: GPL-3.0-or-later
+website: https://github.com/igneus/in-adiutorium-frescobaldi
+repository: https://github.com/igneus/in-adiutorium-frescobaldi.git
