@@ -1,3 +1,5 @@
+import os.path
+
 from PyQt5.QtWidgets import QApplication, QAction, QMessageBox
 from PyQt5.QtGui import QTextCursor, QTextDocument
 from PyQt5.QtCore import QUrl
@@ -54,6 +56,13 @@ def duplicate_score(score, document, mainwindow):
     cursor.setPosition(score_beginning, QTextCursor.KeepAnchor)
     mainwindow.setTextCursor(cursor)
 
+def copy_fial(score, path):
+    fial = '{0}#{1}'.format(
+        project_path(path).replace('variationes/', ''),
+        score.headers['id']
+    )
+    QApplication.clipboard().setText(fial)
+
 def goto_source(score, path, mainwindow):
     open_fial(score.fial(), path, mainwindow)
 
@@ -87,3 +96,17 @@ def open_score(path, score_id, mainwindow):
             QMessageBox.information(mainwindow, app.caption(_("Error")), msg)
         else:
             mainwindow.setTextCursor(cursor)
+
+def project_path(path):
+    """
+    Path relative to the project root.
+    Directory containing the .git directory is considered project root.
+    """
+    return path.replace(git_root_dir(path) + '/', '')
+
+def git_root_dir(path):
+    while not (path == '' or path == '/'):
+        if os.path.isdir(path) and os.path.isdir(os.path.join(path, '.git')):
+            break
+        path = os.path.dirname(path)
+    return path
