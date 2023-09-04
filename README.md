@@ -9,10 +9,9 @@ the customizations are being extracted to an extension.
 
 ## Installation
 
-In Frescobaldi `Preferences`, section `Extensions`
-
-- enable extensions
-- set up your extensions directory
+- In Frescobaldi `Preferences`, section `Extensions`
+  - enable extensions
+  - set up your extensions directory
 - `git clone` this repository
 - in the extensions directory create a symlink to the cloned repo
 - restart Frescobaldi, the extension will show up in `Preferences > Extensions`; make sure it's enabled (checkbox checked)
