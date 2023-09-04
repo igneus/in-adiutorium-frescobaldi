@@ -22,14 +22,18 @@ class Actions(extensions.actions.ExtensionActionCollection):
         self.goto_variations_action.setText(_('Go to variations/main'))
 
     def configure_menu_actions(self):
-        # context menu actions
-        self.set_menu_action_list('editor', [
+        actions = [
             self.copy_score_action,
             self.duplicate_score_action,
             self.copy_fial_action,
             self.goto_source_action,
             self.goto_variations_action,
-        ])
+        ]
+
+        # editor context menu
+        self.set_menu_action_list('editor', actions)
+        # Tools menu
+        self.set_menu_action_list('tools', actions)
 
 class Extension(extensions.Extension):
     _action_collection_class = Actions
