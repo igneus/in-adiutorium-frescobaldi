@@ -4,8 +4,8 @@
 assisting common workflows of the [In adiutorium][ia] project.
 
 For a long time a [customized fork][fork] of the editor has been used,
-now when extensions API was added to Frescobaldi 3
-the customizations are being extracted to an extension.
+now when Frescobaldi 3 has an extensions API
+the customizations were extracted to an extension.
 
 ## Installation
 
@@ -18,8 +18,14 @@ the customizations are being extracted to an extension.
 
 ## Usage
 
-The extension provides actions in the editor context menu
-and `Tools` menu.
+The extension provides additional actions in
+
+- `Tools` menu
+- editor context menu
+- editor tab context menu
+
+Most of them take care of navigation between related files and scores
+within the In adiutorium project source tree.
 
 [fresco]: https://github.com/frescobaldi/frescobaldi
 [ext]: https://github.com/frescobaldi-extensions/
