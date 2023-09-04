@@ -1,10 +1,12 @@
 # Frescobaldi modules
+import app
 import extensions
 import extensions.actions
 
 from PyQt5.QtWidgets import QAction
+from PyQt5.QtGui import QColor
 
-from .inadiutorium import score, contextmenu
+from .inadiutorium import score, contextmenu, variations
 
 class Actions(extensions.actions.ExtensionActionCollection):
     def createActions(self, parent):
@@ -51,6 +53,9 @@ class Extension(extensions.Extension):
         self.menu('editor').aboutToShow.connect(self.do_update_actions)
         self.menu('tools').aboutToShow.connect(self.do_update_actions)
 
+        app.documentLoaded.connect(self.do_update_document_tab)
+        app.documentUrlChanged.connect(self.do_update_document_tab)
+
     def current_score(self):
         return score.score_under_cursor(self.text_cursor())
 
@@ -91,3 +96,11 @@ class Extension(extensions.Extension):
             ac.goto_variations_action.setEnabled(score.has_id())
             ac.goto_source_action.setEnabled(score.has_fial())
             # TODO: goto_variations should have appropriate text
+
+    def do_update_document_tab(self, document):
+        tabbar = self.mainwindow().tabBar
+        if variations.is_variations_file(document.url().toLocalFile()) and document in tabbar.docs:
+            index = tabbar.docs.index(document)
+            color = QColor('indigo')
+            tabbar.setTabTextColor(index, color)
+        # TODO: reset color if never more appropriate
