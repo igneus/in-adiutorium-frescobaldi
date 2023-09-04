@@ -16,12 +16,16 @@ class Actions(extensions.actions.ExtensionActionCollection):
         self.goto_source_action = QAction(parent)
         self.goto_variations_action = QAction(parent)
 
+        self.goto_variations_file_action = QAction(parent)
+
     def translateUI(self):
         self.copy_score_action.setText(_('Copy score'))
         self.duplicate_score_action.setText(_('Duplicate score'))
         self.copy_fial_action.setText(_('Copy FIAL'))
         self.goto_source_action.setText(_('Go to source'))
         self.goto_variations_action.setText(_('Go to variations/main'))
+
+        self.goto_variations_file_action.setText(_('Go to variations/main'))
 
     def configure_menu_actions(self):
         actions = [
@@ -50,11 +54,18 @@ class Extension(extensions.Extension):
         ac.goto_source_action.triggered.connect(self.do_goto_source)
         ac.goto_variations_action.triggered.connect(self.do_goto_variations)
 
+        ac.goto_variations_file_action.triggered.connect(self.do_goto_variations_file)
+
         self.menu('editor').aboutToShow.connect(self.do_update_actions)
         self.menu('tools').aboutToShow.connect(self.do_update_actions)
 
         app.documentLoaded.connect(self.do_update_document_tab)
         app.documentUrlChanged.connect(self.do_update_document_tab)
+
+        tab_menu = self.mainwindow().tabBar.contextMenu()
+        tab_menu.addSeparator()
+        tab_menu.addAction(ac.goto_variations_file_action)
+        # TODO: set appropriate text for main/development file
 
     def current_score(self):
         return score.score_under_cursor(self.text_cursor())
@@ -76,6 +87,9 @@ class Extension(extensions.Extension):
 
     def do_goto_variations(self):
         contextmenu.goto_variations(self.current_score(), self.current_document_path(), self.mainwindow())
+
+    def do_goto_variations_file(self):
+        contextmenu.goto_variations_file(self.current_document_path(), self.mainwindow())
 
     def do_update_actions(self):
         """

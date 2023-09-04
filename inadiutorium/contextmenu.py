@@ -74,20 +74,34 @@ def goto_variations(score, path, mainwindow):
 
     open_score(path_to_open, score.headers['id'], mainwindow)
 
+def goto_variations_file(path, mainwindow):
+    if is_variations_file(path):
+        path_to_open = main_file(path)
+    else:
+        path_to_open = variations_file(path)
+
+    open_file(path_to_open, mainwindow)
+
 """ Helper functions """
 
 def open_fial(fial, project_path, mainwindow):
     open_score(fial.expand_path(project_path), fial.id, mainwindow)
 
-def open_score(path, score_id, mainwindow):
+def open_file(path, mainwindow):
     url = QUrl.fromLocalFile(path)
     try:
         doc = app.openUrl(url)
     except IOError as e:
         msg = 'Failed to read referenced file {0}.'.format(path)
         QMessageBox.critical(mainwindow, app.caption(_("Error")), msg)
-        return
+        return None
     else:
+        mainwindow.setCurrentDocument(doc)
+        return doc
+
+def open_score(path, score_id, mainwindow):
+    doc = open_file(path, mainwindow)
+    if doc is not None:
         mainwindow.setCurrentDocument(doc)
         id_str = 'id = "{0}"'.format(score_id)
         cursor = doc.find(id_str)
