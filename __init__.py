@@ -44,12 +44,8 @@ class Extension(extensions.Extension):
         ac.goto_source_action.triggered.connect(self.do_goto_source)
         ac.goto_variations_action.triggered.connect(self.do_goto_variations)
 
-        # TODO: enable/disable actions depending on availability
-        # of a score under cursor
-
-        # TODO:
-        # - goto_source only active for score with fial
-        # - goto_variations only active for score with id and should have appropriate text variant
+        self.menu('editor').aboutToShow.connect(self.do_update_actions)
+        self.menu('tools').aboutToShow.connect(self.do_update_actions)
 
     def current_score(self):
         return score.score_under_cursor(self.text_cursor())
@@ -71,3 +67,23 @@ class Extension(extensions.Extension):
 
     def do_goto_variations(self):
         contextmenu.goto_variations(self.current_score(), self.current_document_path(), self.mainwindow())
+
+    def do_update_actions(self):
+        """
+        Enables/disables actions based on what's under the cursor
+        """
+        score = self.current_score()
+        ac = self.action_collection()
+
+        def setAllEnabled(action_collection, enabled):
+            for name, action in action_collection.actions().items():
+                action.setEnabled(enabled)
+
+        if score is None:
+            setAllEnabled(ac, False)
+        else:
+            setAllEnabled(ac, True)
+            ac.copy_fial_action.setEnabled(score.has_id())
+            ac.goto_variations_action.setEnabled(score.has_id())
+            ac.goto_source_action.setEnabled(score.has_fial())
+            # TODO: goto_variations should have appropriate text
