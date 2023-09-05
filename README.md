@@ -24,8 +24,13 @@ The extension provides additional actions in
 - editor context menu
 - editor tab context menu
 
-Most of them take care of navigation between related files and scores
-within the In adiutorium project source tree.
+The In adiutorium project consists of a large amount of small simple
+scores connected by relations - partly implicit
+(relation between an "official" score and its development variants
+in the `variationes/` directory), partly explicit
+(relation to a melody source encoded in the `fial` header field).
+Most of the extension's functionality helps navigating this network
+of relations.
 
 [fresco]: https://github.com/frescobaldi/frescobaldi
 [ext]: https://github.com/frescobaldi-extensions/
