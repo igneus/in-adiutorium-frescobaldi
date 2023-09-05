@@ -9,6 +9,10 @@ from PyQt5.QtGui import QColor
 from .inadiutorium import score, contextmenu, variations
 
 class Actions(extensions.actions.ExtensionActionCollection):
+    GOTO_VARIATIONS = 'Go to variations'
+    GOTO_MAIN = 'Go to main'
+    GOTO_UNCERTAIN = 'Go to variations/main'
+
     def createActions(self, parent):
         self.copy_score_action = QAction(parent)
         self.duplicate_score_action = QAction(parent)
@@ -23,9 +27,9 @@ class Actions(extensions.actions.ExtensionActionCollection):
         self.duplicate_score_action.setText(_('Duplicate score'))
         self.copy_fial_action.setText(_('Copy FIAL'))
         self.goto_source_action.setText(_('Go to source'))
-        self.goto_variations_action.setText(_('Go to variations/main'))
+        self.goto_variations_action.setText(_(self.GOTO_UNCERTAIN))
 
-        self.goto_variations_file_action.setText(_('Go to variations/main'))
+        self.goto_variations_file_action.setText(_(self.GOTO_UNCERTAIN))
 
     def configure_menu_actions(self):
         actions = [
@@ -59,19 +63,29 @@ class Extension(extensions.Extension):
         self.menu('editor').aboutToShow.connect(self.do_update_actions)
         self.menu('tools').aboutToShow.connect(self.do_update_actions)
 
+        # code below hooks into the editor's internal APIs,
+        # beyond the Extensions API, and is more probable to break
+        # in future
+
         app.documentLoaded.connect(self.do_update_document_tab)
         app.documentUrlChanged.connect(self.do_update_document_tab)
 
         tab_menu = self.mainwindow().tabBar.contextMenu()
         tab_menu.addSeparator()
         tab_menu.addAction(ac.goto_variations_file_action)
-        # TODO: set appropriate text for main/development file
+        tab_menu.aboutToShow.connect(self.set_goto_variations_text)
 
     def current_score(self):
         return score.score_under_cursor(self.text_cursor())
 
     def current_document_path(self):
         return self.current_document().url().path()
+
+    def set_goto_variations_text(self):
+        ac = self.action_collection()
+        text = Actions.GOTO_MAIN if variations.is_variations_file(self.current_document_path()) else Actions.GOTO_VARIATIONS
+        ac.goto_variations_action.setText(_(text))
+        ac.goto_variations_file_action.setText(_(text))
 
     def do_copy_score(self):
         contextmenu.copy_score(self.current_score(), self.current_document())
@@ -109,7 +123,7 @@ class Extension(extensions.Extension):
             ac.copy_fial_action.setEnabled(score.has_id())
             ac.goto_variations_action.setEnabled(score.has_id())
             ac.goto_source_action.setEnabled(score.has_fial())
-            # TODO: goto_variations should have appropriate text
+            self.set_goto_variations_text()
 
     def do_update_document_tab(self, document):
         tabbar = self.mainwindow().tabBar
@@ -117,4 +131,6 @@ class Extension(extensions.Extension):
             index = tabbar.docs.index(document)
             color = QColor('indigo')
             tabbar.setTabTextColor(index, color)
-        # TODO: reset color if never more appropriate
+        # TODO: reset color if never more appropriate due to path change
+        # (but this rarely ever happens in practice, so we can just
+        # ignore it)
