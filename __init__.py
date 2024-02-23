@@ -18,6 +18,7 @@ class Actions(extensions.actions.ExtensionActionCollection):
         self.duplicate_score_action = QAction(parent)
         self.copy_fial_action = QAction(parent)
         self.goto_source_action = QAction(parent)
+        self.goto_source_variations_action = QAction(parent)
         self.goto_variations_action = QAction(parent)
 
         self.goto_variations_file_action = QAction(parent)
@@ -27,6 +28,7 @@ class Actions(extensions.actions.ExtensionActionCollection):
         self.duplicate_score_action.setText(_('Duplicate score'))
         self.copy_fial_action.setText(_('Copy FIAL'))
         self.goto_source_action.setText(_('Go to source'))
+        self.goto_source_variations_action.setText(_('Go to variations (source)'))
         self.goto_variations_action.setText(_(self.GOTO_UNCERTAIN))
 
         self.goto_variations_file_action.setText(_(self.GOTO_UNCERTAIN))
@@ -37,6 +39,7 @@ class Actions(extensions.actions.ExtensionActionCollection):
             self.duplicate_score_action,
             self.copy_fial_action,
             self.goto_source_action,
+            self.goto_source_variations_action,
             self.goto_variations_action,
         ]
 
@@ -56,6 +59,7 @@ class Extension(extensions.Extension):
         ac.duplicate_score_action.triggered.connect(self.do_duplicate_score)
         ac.copy_fial_action.triggered.connect(self.do_copy_fial)
         ac.goto_source_action.triggered.connect(self.do_goto_source)
+        ac.goto_source_variations_action.triggered.connect(self.do_goto_source_variations)
         ac.goto_variations_action.triggered.connect(self.do_goto_variations)
 
         ac.goto_variations_file_action.triggered.connect(self.do_goto_variations_file)
@@ -99,6 +103,9 @@ class Extension(extensions.Extension):
     def do_goto_source(self):
         contextmenu.goto_source(self.current_score(), self.current_document_path(), self.mainwindow())
 
+    def do_goto_source_variations(self):
+        contextmenu.goto_source_variations(self.current_score(), self.current_document_path(), self.mainwindow())
+
     def do_goto_variations(self):
         contextmenu.goto_variations(self.current_score(), self.current_document_path(), self.mainwindow())
 
@@ -123,6 +130,7 @@ class Extension(extensions.Extension):
             ac.copy_fial_action.setEnabled(score.has_id())
             ac.goto_variations_action.setEnabled(score.has_id())
             ac.goto_source_action.setEnabled(score.has_fial())
+            ac.goto_source_variations_action.setEnabled(score.has_fial())
             self.set_goto_variations_text()
 
     def do_update_document_tab(self, document):

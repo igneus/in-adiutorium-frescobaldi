@@ -82,6 +82,14 @@ def goto_variations_file(path, mainwindow):
 
     open_file(path_to_open, mainwindow)
 
+def goto_source_variations(score, path, mainwindow):
+    """
+    Navigate to the development version of the score
+    reference by the specified score's fial.
+    """
+    fial = score.fial()
+    open_score(variations_file(fial.expand_path(path)), fial.id, mainwindow)
+
 """ Helper functions """
 
 def open_fial(fial, project_path, mainwindow):
