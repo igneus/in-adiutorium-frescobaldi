@@ -1,8 +1,8 @@
 import os.path
 
-from PyQt5.QtWidgets import QApplication, QAction, QMessageBox
-from PyQt5.QtGui import QTextCursor, QTextDocument
-from PyQt5.QtCore import QUrl
+from PyQt6.QtWidgets import QApplication, QMessageBox
+from PyQt6.QtGui import QAction, QTextCursor, QTextDocument
+from PyQt6.QtCore import QUrl
 
 import app
 

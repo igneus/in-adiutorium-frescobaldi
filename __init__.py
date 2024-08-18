@@ -3,8 +3,7 @@ import app
 import extensions
 import extensions.actions
 
-from PyQt5.QtWidgets import QAction
-from PyQt5.QtGui import QColor
+from PyQt6.QtGui import QAction, QColor
 
 from .inadiutorium import score, contextmenu, variations
 
