@@ -18,10 +18,10 @@ def copy_score(score, document):
     # it isn't easily possible to get score start index
     # from the DOM ...
     start_token = '\\score'
-    score_start_cur = document.find(start_token, score_end, QTextDocument.FindBackward)
+    score_start_cur = document.find(start_token, score_end, QTextDocument.FindFlag.FindBackward)
     score_start = score_start_cur.position() - len(start_token)
-    copy_cursor.setPosition(score_start, QTextCursor.MoveAnchor)
-    copy_cursor.setPosition(score_end, QTextCursor.KeepAnchor)
+    copy_cursor.setPosition(score_start, QTextCursor.MoveMode.MoveAnchor)
+    copy_cursor.setPosition(score_end, QTextCursor.MoveMode.KeepAnchor)
 
     # copy to clipboard
     fragment = copy_cursor.selection()
@@ -30,7 +30,7 @@ def copy_score(score, document):
 def duplicate_score(score, document, mainwindow):
     # add newline after the score
     cursor = QTextCursor(document)
-    cursor.setPosition(score.end(), QTextCursor.MoveAnchor)
+    cursor.setPosition(score.end(), QTextCursor.MoveMode.MoveAnchor)
     cursor.insertText('\n\n')
 
     # copy score
@@ -39,12 +39,12 @@ def duplicate_score(score, document, mainwindow):
     # it isn't easily possible to get score start index
     # from the DOM ...
     start_token = '\\score'
-    score_start_cur = document.find(start_token, score_end, QTextDocument.FindBackward)
+    score_start_cur = document.find(start_token, score_end, QTextDocument.FindFlag.FindBackward)
     score_start = score_start_cur.position() - len(start_token)
     while document.characterAt(score_start - 1) == ' ':
         score_start -= 1
-    copy_cursor.setPosition(score_start, QTextCursor.MoveAnchor)
-    copy_cursor.setPosition(score_end, QTextCursor.KeepAnchor)
+    copy_cursor.setPosition(score_start, QTextCursor.MoveMode.MoveAnchor)
+    copy_cursor.setPosition(score_end, QTextCursor.MoveMode.KeepAnchor)
 
     # insert copy
     fragment = copy_cursor.selection()
@@ -53,7 +53,7 @@ def duplicate_score(score, document, mainwindow):
     # make it selected
     fragment_len = len(fragment.toPlainText())
     score_beginning = cursor.position() - fragment_len
-    cursor.setPosition(score_beginning, QTextCursor.KeepAnchor)
+    cursor.setPosition(score_beginning, QTextCursor.MoveMode.KeepAnchor)
     mainwindow.setTextCursor(cursor)
 
 def copy_fial(score, path):
